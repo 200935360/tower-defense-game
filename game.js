@@ -773,51 +773,519 @@ class TowerDefenseGame {
             const isSlowed = now < enemy.slowEndTime;
             const isPoisoned = now < enemy.poisonEndTime;
             
-            // 绘制敌人 - 根据形状绘制
-            this.ctx.fillStyle = isSlowed ? '#87CEEB' : enemy.color;
-            this.ctx.strokeStyle = enemy.borderColor;
-            this.ctx.lineWidth = 2;
+            // 根据怪物类型绘制精美形象
+            this.drawEnemyByType(enemy, isSlowed);
             
-            this.ctx.beginPath();
-            
-            if (enemy.shape === 'triangle') {
-                // 三角形 - 狼人、兽人
-                this.ctx.moveTo(enemy.x, enemy.y - enemy.size);
-                this.ctx.lineTo(enemy.x + enemy.size, enemy.y + enemy.size);
-                this.ctx.lineTo(enemy.x - enemy.size, enemy.y + enemy.size);
-            } else if (enemy.shape === 'diamond') {
-                // 菱形 - 蝙蝠、恶魔、幽灵
-                this.ctx.moveTo(enemy.x, enemy.y - enemy.size);
-                this.ctx.lineTo(enemy.x + enemy.size, enemy.y);
-                this.ctx.lineTo(enemy.x, enemy.y + enemy.size);
-                this.ctx.lineTo(enemy.x - enemy.size, enemy.y);
-            } else if (enemy.shape === 'square') {
-                // 方形 - 骷髅、吸血鬼
-                this.ctx.rect(enemy.x - enemy.size, enemy.y - enemy.size, enemy.size * 2, enemy.size * 2);
-            } else {
-                // 圆形 - 哥布林、巨龙、魔王
-                this.ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
-            }
-            
-            this.ctx.fill();
-            this.ctx.stroke();
-            
-            // 如果中毒，绘制绿色边框
+            // 如果中毒，绘制绿色光环
             if (isPoisoned) {
                 this.ctx.strokeStyle = '#32CD32';
-                this.ctx.lineWidth = 3;
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.arc(enemy.x, enemy.y, enemy.size + 4, 0, Math.PI * 2);
+                this.ctx.stroke();
+            }
+            
+            // 如果减速，绘制蓝色光环
+            if (isSlowed) {
+                this.ctx.strokeStyle = '#87CEEB';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.arc(enemy.x, enemy.y, enemy.size + 2, 0, Math.PI * 2);
                 this.ctx.stroke();
             }
             
             // 绘制血条背景
             this.ctx.fillStyle = '#333';
-            this.ctx.fillRect(enemy.x - 15, enemy.y - enemy.size - 8, 30, 4);
+            this.ctx.fillRect(enemy.x - 15, enemy.y - enemy.size - 10, 30, 5);
             
             // 绘制血条
             const hpPercent = enemy.hp / enemy.maxHp;
             this.ctx.fillStyle = hpPercent > 0.5 ? '#00ff00' : hpPercent > 0.25 ? '#ffff00' : '#ff0000';
-            this.ctx.fillRect(enemy.x - 15, enemy.y - enemy.size - 8, 30 * hpPercent, 4);
+            this.ctx.fillRect(enemy.x - 15, enemy.y - enemy.size - 10, 30 * hpPercent, 5);
         }
+    }
+    
+    drawEnemyByType(enemy, isSlowed) {
+        const ctx = this.ctx;
+        const x = enemy.x;
+        const y = enemy.y;
+        const s = enemy.size;
+        
+        switch(enemy.enemyType) {
+            case 'werewolf':
+                this.drawWerewolf(ctx, x, y, s, isSlowed);
+                break;
+            case 'bat':
+                this.drawBat(ctx, x, y, s, isSlowed);
+                break;
+            case 'goblin':
+                this.drawGoblin(ctx, x, y, s, isSlowed);
+                break;
+            case 'skeleton':
+                this.drawSkeleton(ctx, x, y, s, isSlowed);
+                break;
+            case 'orc':
+                this.drawOrc(ctx, x, y, s, isSlowed);
+                break;
+            case 'demon':
+                this.drawDemon(ctx, x, y, s, isSlowed);
+                break;
+            case 'dragon':
+                this.drawDragon(ctx, x, y, s, isSlowed);
+                break;
+            case 'ghost':
+                this.drawGhost(ctx, x, y, s, isSlowed);
+                break;
+            case 'vampire':
+                this.drawVampire(ctx, x, y, s, isSlowed);
+                break;
+            case 'boss':
+                this.drawBoss(ctx, x, y, s, isSlowed);
+                break;
+            default:
+                // 默认圆形
+                ctx.fillStyle = enemy.color;
+                ctx.beginPath();
+                ctx.arc(x, y, s, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = enemy.borderColor;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+        }
+    }
+    
+    drawWerewolf(ctx, x, y, s, isSlowed) {
+        // 狼人 - 狼头造型
+        const color = isSlowed ? '#5BA3C6' : '#8B4513';
+        
+        // 头部
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.8, s, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 耳朵
+        ctx.beginPath();
+        ctx.moveTo(x - s * 0.6, y - s * 0.5);
+        ctx.lineTo(x - s * 0.8, y - s * 1.2);
+        ctx.lineTo(x - s * 0.3, y - s * 0.6);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.6, y - s * 0.5);
+        ctx.lineTo(x + s * 0.8, y - s * 1.2);
+        ctx.lineTo(x + s * 0.3, y - s * 0.6);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#FF0000';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.3, y - s * 0.2, s * 0.15, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.3, y - s * 0.2, s * 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 鼻子
+        ctx.fillStyle = '#2a1a0a';
+        ctx.beginPath();
+        ctx.arc(x, y + s * 0.2, s * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#4a2a0a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.8, s, 0, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawBat(ctx, x, y, s, isSlowed) {
+        // 蝙蝠 - 展翅造型
+        const color = isSlowed ? '#6B4CA6' : '#4B0082';
+        
+        // 身体
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.4, s * 0.6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 翅膀
+        ctx.fillStyle = isSlowed ? '#5a3a7a' : '#3a0060';
+        // 左翅膀
+        ctx.beginPath();
+        ctx.moveTo(x - s * 0.3, y);
+        ctx.quadraticCurveTo(x - s * 1.2, y - s * 0.5, x - s, y + s * 0.3);
+        ctx.quadraticCurveTo(x - s * 0.6, y + s * 0.2, x - s * 0.3, y);
+        ctx.fill();
+        
+        // 右翅膀
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.3, y);
+        ctx.quadraticCurveTo(x + s * 1.2, y - s * 0.5, x + s, y + s * 0.3);
+        ctx.quadraticCurveTo(x + s * 0.6, y + s * 0.2, x + s * 0.3, y);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#FF0000';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.15, y - s * 0.2, s * 0.1, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.15, y - s * 0.2, s * 0.1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#2a0040';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.4, s * 0.6, 0, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawGoblin(ctx, x, y, s, isSlowed) {
+        // 哥布林 - 绿色小怪物
+        const color = isSlowed ? '#5BA3A3' : '#228B22';
+        
+        // 头部
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 耳朵
+        ctx.fillStyle = isSlowed ? '#4a8a8a' : '#1a6a1a';
+        ctx.beginPath();
+        ctx.ellipse(x - s * 0.7, y - s * 0.3, s * 0.3, s * 0.5, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(x + s * 0.7, y - s * 0.3, s * 0.3, s * 0.5, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.25, y - s * 0.1, s * 0.2, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.25, y - s * 0.1, s * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 瞳孔
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.25, y - s * 0.1, s * 0.1, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.25, y - s * 0.1, s * 0.1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 鼻子
+        ctx.fillStyle = isSlowed ? '#3a7a7a' : '#1a5a1a';
+        ctx.beginPath();
+        ctx.arc(x, y + s * 0.25, s * 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#0a4a0a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.8, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawSkeleton(ctx, x, y, s, isSlowed) {
+        // 骷髅 - 骷髅头
+        const color = isSlowed ? '#A3C3C3' : '#F5F5DC';
+        
+        // 头骨
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y - s * 0.1, s * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 下颚
+        ctx.beginPath();
+        ctx.ellipse(x, y + s * 0.5, s * 0.5, s * 0.35, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 眼眶
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.ellipse(x - s * 0.3, y - s * 0.15, s * 0.25, s * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(x + s * 0.3, y - s * 0.15, s * 0.25, s * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 鼻孔
+        ctx.beginPath();
+        ctx.moveTo(x, y + s * 0.1);
+        ctx.lineTo(x - s * 0.1, y + s * 0.25);
+        ctx.lineTo(x + s * 0.1, y + s * 0.25);
+        ctx.fill();
+        
+        // 牙齿
+        ctx.fillStyle = color;
+        for (let i = -2; i <= 2; i++) {
+            ctx.fillRect(x + i * s * 0.15 - s * 0.05, y + s * 0.4, s * 0.1, s * 0.15);
+        }
+        
+        // 边框
+        ctx.strokeStyle = '#888';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y - s * 0.1, s * 0.8, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawOrc(ctx, x, y, s, isSlowed) {
+        // 兽人 - 大型绿色怪物
+        const color = isSlowed ? '#4a8a4a' : '#006400';
+        
+        // 身体
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 獠牙
+        ctx.fillStyle = '#FFFFF0';
+        ctx.beginPath();
+        ctx.moveTo(x - s * 0.4, y + s * 0.2);
+        ctx.lineTo(x - s * 0.5, y + s * 0.8);
+        ctx.lineTo(x - s * 0.3, y + s * 0.3);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.4, y + s * 0.2);
+        ctx.lineTo(x + s * 0.5, y + s * 0.8);
+        ctx.lineTo(x + s * 0.3, y + s * 0.3);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#FF0000';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.3, y - s * 0.2, s * 0.18, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.3, y - s * 0.2, s * 0.18, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#003a00';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.9, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawDemon(ctx, x, y, s, isSlowed) {
+        // 恶魔 - 红色恶魔
+        const color = isSlowed ? '#8a4a4a' : '#8B0000';
+        
+        // 身体
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.85, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 角
+        ctx.fillStyle = '#2a0a0a';
+        ctx.beginPath();
+        ctx.moveTo(x - s * 0.5, y - s * 0.5);
+        ctx.lineTo(x - s * 0.7, y - s * 1.3);
+        ctx.lineTo(x - s * 0.2, y - s * 0.6);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.5, y - s * 0.5);
+        ctx.lineTo(x + s * 0.7, y - s * 1.3);
+        ctx.lineTo(x + s * 0.2, y - s * 0.6);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.25, y - s * 0.15, s * 0.15, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.25, y - s * 0.15, s * 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#4a0000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.85, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawDragon(ctx, x, y, s, isSlowed) {
+        // 巨龙 - 龙头
+        const color = isSlowed ? '#C67a4a' : '#FF4500';
+        
+        // 头部
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.9, s * 0.7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 角
+        ctx.fillStyle = '#8B4513';
+        ctx.beginPath();
+        ctx.moveTo(x - s * 0.6, y - s * 0.4);
+        ctx.lineTo(x - s * 0.9, y - s * 1.2);
+        ctx.lineTo(x - s * 0.3, y - s * 0.5);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.6, y - s * 0.4);
+        ctx.lineTo(x + s * 0.9, y - s * 1.2);
+        ctx.lineTo(x + s * 0.3, y - s * 0.5);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.ellipse(x - s * 0.35, y - s * 0.1, s * 0.18, s * 0.12, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + s * 0.35, y - s * 0.1, s * 0.18, s * 0.12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 鼻孔
+        ctx.fillStyle = '#8B0000';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.2, y + s * 0.3, s * 0.1, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.2, y + s * 0.3, s * 0.1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#CC3700';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.9, s * 0.7, 0, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawGhost(ctx, x, y, s, isSlowed) {
+        // 幽灵 - 半透明幽灵
+        ctx.globalAlpha = isSlowed ? 0.5 : 0.7;
+        
+        // 身体
+        ctx.fillStyle = isSlowed ? '#A3C3C3' : '#E0E0E0';
+        ctx.beginPath();
+        ctx.arc(x, y - s * 0.3, s * 0.8, Math.PI, 0);
+        ctx.lineTo(x + s * 0.8, y + s * 0.6);
+        // 波浪底部
+        for (let i = 0; i <= 4; i++) {
+            const px = x + s * 0.8 - i * s * 0.4;
+            const py = y + s * 0.6 + (i % 2 === 0 ? 0 : s * 0.3);
+            ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.ellipse(x - s * 0.25, y - s * 0.3, s * 0.15, s * 0.2, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + s * 0.25, y - s * 0.3, s * 0.15, s * 0.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.globalAlpha = 1;
+        
+        // 边框
+        ctx.strokeStyle = '#aaa';
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y - s * 0.3, s * 0.8, Math.PI, 0);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    }
+    
+    drawVampire(ctx, x, y, s, isSlowed) {
+        // 吸血鬼 - 吸血鬼脸
+        const color = isSlowed ? '#6a4a6a' : '#800080';
+        
+        // 脸部
+        ctx.fillStyle = '#F5F5DC';
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.7, s * 0.85, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 头发
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.ellipse(x, y - s * 0.5, s * 0.75, s * 0.5, 0, Math.PI, 0);
+        ctx.fill();
+        
+        // 眼睛
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(x - s * 0.25, y - s * 0.1, s * 0.15, s * 0.2, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + s * 0.25, y - s * 0.1, s * 0.15, s * 0.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 尖牙
+        ctx.fillStyle = '#FFF';
+        ctx.beginPath();
+        ctx.moveTo(x - s * 0.2, y + s * 0.35);
+        ctx.lineTo(x - s * 0.15, y + s * 0.6);
+        ctx.lineTo(x - s * 0.1, y + s * 0.35);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.2, y + s * 0.35);
+        ctx.lineTo(x + s * 0.15, y + s * 0.6);
+        ctx.lineTo(x + s * 0.1, y + s * 0.35);
+        ctx.fill();
+        
+        // 边框
+        ctx.strokeStyle = '#4a004a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s * 0.7, s * 0.85, 0, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    
+    drawBoss(ctx, x, y, s, isSlowed) {
+        // 魔王 - 大BOSS
+        const color = isSlowed ? '#4a4a4a' : '#1a0a0a';
+        
+        // 身体
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.95, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 多个角
+        ctx.fillStyle = '#8B0000';
+        for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI * 2 / 6) - Math.PI / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + Math.cos(angle) * s * 0.6, y + Math.sin(angle) * s * 0.6);
+            ctx.lineTo(x + Math.cos(angle - 0.2) * s * 1.3, y + Math.sin(angle - 0.2) * s * 1.3);
+            ctx.lineTo(x + Math.cos(angle + 0.2) * s * 1.3, y + Math.sin(angle + 0.2) * s * 1.3);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 眼睛
+        ctx.fillStyle = '#FF0000';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.3, y - s * 0.2, s * 0.2, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.3, y - s * 0.2, s * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 瞳孔
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(x - s * 0.3, y - s * 0.2, s * 0.1, 0, Math.PI * 2);
+        ctx.arc(x + s * 0.3, y - s * 0.2, s * 0.1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 嘴巴
+        ctx.strokeStyle = '#FF0000';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(x, y + s * 0.3, s * 0.4, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+        
+        // 边框
+        ctx.strokeStyle = '#FF0000';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 0.95, 0, Math.PI * 2);
+        ctx.stroke();
     }
     
     drawProjectiles() {

@@ -714,57 +714,319 @@ class TowerDefenseGame {
     
     drawTowers() {
         for (let tower of this.towers) {
-            // 绘制塔基座
-            this.ctx.fillStyle = tower.color;
-            this.ctx.fillRect(
-                tower.x - 15,
-                tower.y - 15,
-                30,
-                30
-            );
-            
-            // 绘制塔顶 - 根据塔类型绘制不同形状
-            this.ctx.fillStyle = '#fff';
-            this.ctx.beginPath();
-            
-            if (tower.type === 'ice') {
-                // 冰塔 - 菱形
-                this.ctx.moveTo(tower.x, tower.y - 10);
-                this.ctx.lineTo(tower.x + 8, tower.y);
-                this.ctx.lineTo(tower.x, tower.y + 10);
-                this.ctx.lineTo(tower.x - 8, tower.y);
-            } else if (tower.type === 'fire') {
-                // 火塔 - 三角形
-                this.ctx.moveTo(tower.x, tower.y - 10);
-                this.ctx.lineTo(tower.x + 8, tower.y + 8);
-                this.ctx.lineTo(tower.x - 8, tower.y + 8);
-            } else if (tower.type === 'lightning') {
-                // 雷塔 - 星形
-                this.ctx.moveTo(tower.x, tower.y - 10);
-                this.ctx.lineTo(tower.x + 3, tower.y - 3);
-                this.ctx.lineTo(tower.x + 10, tower.y);
-                this.ctx.lineTo(tower.x + 3, tower.y + 3);
-                this.ctx.lineTo(tower.x, tower.y + 10);
-                this.ctx.lineTo(tower.x - 3, tower.y + 3);
-                this.ctx.lineTo(tower.x - 10, tower.y);
-                this.ctx.lineTo(tower.x - 3, tower.y - 3);
-            } else if (tower.type === 'poison') {
-                // 毒塔 - 圆形带十字
-                this.ctx.arc(tower.x, tower.y, 8, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.strokeStyle = '#fff';
-                this.ctx.lineWidth = 2;
-                this.ctx.beginPath();
-                this.ctx.moveTo(tower.x - 5, tower.y);
-                this.ctx.lineTo(tower.x + 5, tower.y);
-                this.ctx.moveTo(tower.x, tower.y - 5);
-                this.ctx.lineTo(tower.x, tower.y + 5);
-                this.ctx.stroke();
-                continue;
+            switch(tower.type) {
+                case 'ice':
+                    this.drawIceTower(tower);
+                    break;
+                case 'fire':
+                    this.drawFireTower(tower);
+                    break;
+                case 'lightning':
+                    this.drawLightningTower(tower);
+                    break;
+                case 'poison':
+                    this.drawPoisonTower(tower);
+                    break;
             }
-            
-            this.ctx.fill();
         }
+    }
+    
+    drawIceTower(tower) {
+        const ctx = this.ctx;
+        const x = tower.x;
+        const y = tower.y;
+        
+        // 石质底座
+        ctx.fillStyle = '#5a6a7a';
+        ctx.beginPath();
+        ctx.moveTo(x - 16, y + 14);
+        ctx.lineTo(x + 16, y + 14);
+        ctx.lineTo(x + 12, y + 4);
+        ctx.lineTo(x - 12, y + 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#3a4a5a';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // 塔身 - 冰蓝色渐变
+        const grad = ctx.createLinearGradient(x - 10, y - 16, x + 10, y + 4);
+        grad.addColorStop(0, '#B0E0E6');
+        grad.addColorStop(0.5, '#00CED1');
+        grad.addColorStop(1, '#4682B4');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(x - 10, y + 4);
+        ctx.lineTo(x + 10, y + 4);
+        ctx.lineTo(x + 6, y - 14);
+        ctx.lineTo(x - 6, y - 14);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#1E90FF';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // 冰晶顶部 - 六角形
+        ctx.fillStyle = '#E0FFFF';
+        ctx.strokeStyle = '#87CEEB';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI * 2 / 6) - Math.PI / 2;
+            const px = x + Math.cos(angle) * 8;
+            const py = y - 16 + Math.sin(angle) * 8;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // 冰晶内部光芒
+        ctx.fillStyle = '#FFF';
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.arc(x, y - 16, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        
+        // 冰晶碎片装饰
+        ctx.strokeStyle = '#B0E0E6';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x - 12, y - 4);
+        ctx.lineTo(x - 16, y - 8);
+        ctx.moveTo(x + 12, y - 4);
+        ctx.lineTo(x + 16, y - 8);
+        ctx.stroke();
+    }
+    
+    drawFireTower(tower) {
+        const ctx = this.ctx;
+        const x = tower.x;
+        const y = tower.y;
+        
+        // 石质底座
+        ctx.fillStyle = '#6a4a3a';
+        ctx.beginPath();
+        ctx.moveTo(x - 16, y + 14);
+        ctx.lineTo(x + 16, y + 14);
+        ctx.lineTo(x + 12, y + 4);
+        ctx.lineTo(x - 12, y + 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#4a2a1a';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // 塔身 - 火红色渐变
+        const grad = ctx.createLinearGradient(x - 10, y - 16, x + 10, y + 4);
+        grad.addColorStop(0, '#FF6347');
+        grad.addColorStop(0.5, '#FF4500');
+        grad.addColorStop(1, '#8B0000');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(x - 10, y + 4);
+        ctx.lineTo(x + 10, y + 4);
+        ctx.lineTo(x + 7, y - 12);
+        ctx.lineTo(x - 7, y - 12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#CC3700';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // 火焰口
+        ctx.fillStyle = '#2a0a0a';
+        ctx.beginPath();
+        ctx.arc(x, y - 12, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 火焰
+        const time = Date.now() / 200;
+        for (let i = 0; i < 3; i++) {
+            const flicker = Math.sin(time + i * 2) * 2;
+            ctx.fillStyle = i === 0 ? '#FF4500' : i === 1 ? '#FF6347' : '#FFD700';
+            ctx.globalAlpha = 1 - i * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(x - 4 + i, y - 12);
+            ctx.quadraticCurveTo(x - 3 + flicker, y - 22 - i * 3 + flicker, x + flicker * 0.5, y - 26 - i * 2);
+            ctx.quadraticCurveTo(x + 3 + flicker, y - 22 - i * 3 + flicker, x + 4 - i, y - 12);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        
+        // 火焰光芒
+        ctx.fillStyle = '#FFD700';
+        ctx.globalAlpha = 0.4 + Math.sin(time) * 0.2;
+        ctx.beginPath();
+        ctx.arc(x, y - 18, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+    
+    drawLightningTower(tower) {
+        const ctx = this.ctx;
+        const x = tower.x;
+        const y = tower.y;
+        
+        // 石质底座
+        ctx.fillStyle = '#5a5a3a';
+        ctx.beginPath();
+        ctx.moveTo(x - 16, y + 14);
+        ctx.lineTo(x + 16, y + 14);
+        ctx.lineTo(x + 12, y + 4);
+        ctx.lineTo(x - 12, y + 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#3a3a1a';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // 塔身 - 金色渐变
+        const grad = ctx.createLinearGradient(x - 10, y - 16, x + 10, y + 4);
+        grad.addColorStop(0, '#FFD700');
+        grad.addColorStop(0.5, '#DAA520');
+        grad.addColorStop(1, '#B8860B');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(x - 10, y + 4);
+        ctx.lineTo(x + 10, y + 4);
+        ctx.lineTo(x + 4, y - 16);
+        ctx.lineTo(x - 4, y - 16);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#8B6914';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // 金属环装饰
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x - 9, y);
+        ctx.lineTo(x + 9, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x - 7, y - 6);
+        ctx.lineTo(x + 7, y - 6);
+        ctx.stroke();
+        
+        // 顶部避雷针
+        ctx.strokeStyle = '#C0C0C0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y - 16);
+        ctx.lineTo(x, y - 26);
+        ctx.stroke();
+        
+        // 避雷针顶端球
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(x, y - 27, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 闪电效果
+        const time = Date.now() / 300;
+        const flash = Math.sin(time) > 0.7;
+        if (flash) {
+            ctx.strokeStyle = '#FFFF00';
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(x, y - 27);
+            ctx.lineTo(x - 4, y - 20);
+            ctx.lineTo(x + 2, y - 20);
+            ctx.lineTo(x - 2, y - 14);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            
+            // 电弧光芒
+            ctx.fillStyle = '#FFFF00';
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.arc(x, y - 27, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+    }
+    
+    drawPoisonTower(tower) {
+        const ctx = this.ctx;
+        const x = tower.x;
+        const y = tower.y;
+        
+        // 石质底座
+        ctx.fillStyle = '#3a5a3a';
+        ctx.beginPath();
+        ctx.moveTo(x - 16, y + 14);
+        ctx.lineTo(x + 16, y + 14);
+        ctx.lineTo(x + 12, y + 4);
+        ctx.lineTo(x - 12, y + 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#1a3a1a';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // 塔身 - 绿色渐变
+        const grad = ctx.createLinearGradient(x - 10, y - 16, x + 10, y + 4);
+        grad.addColorStop(0, '#7CFC00');
+        grad.addColorStop(0.5, '#32CD32');
+        grad.addColorStop(1, '#006400');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(x - 10, y + 4);
+        ctx.lineTo(x + 10, y + 4);
+        ctx.lineTo(x + 8, y - 10);
+        ctx.lineTo(x - 8, y - 10);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#228B22';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // 毒液罐 - 圆形
+        ctx.fillStyle = '#2E8B57';
+        ctx.beginPath();
+        ctx.arc(x, y - 14, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#006400';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // 毒液罐高光
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(x - 2, y - 16, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 毒液冒泡效果
+        const time = Date.now() / 500;
+        ctx.fillStyle = '#7CFC00';
+        for (let i = 0; i < 3; i++) {
+            const bx = x + Math.sin(time + i * 2.5) * 4;
+            const by = y - 20 - ((time * 3 + i * 10) % 8);
+            const bs = 1.5 + Math.sin(time + i) * 0.5;
+            ctx.globalAlpha = 0.6 - ((time * 3 + i * 10) % 8) / 12;
+            ctx.beginPath();
+            ctx.arc(bx, by, bs, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        
+        // 骷髅标记
+        ctx.fillStyle = '#FFF';
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y - 14, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#006400';
+        ctx.beginPath();
+        ctx.arc(x - 1.5, y - 15, 1, 0, Math.PI * 2);
+        ctx.arc(x + 1.5, y - 15, 1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
     }
     
     drawEnemies() {
